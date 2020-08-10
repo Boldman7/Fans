@@ -1,0 +1,94 @@
+.tmargin-10
+{
+  margin-top: 10px !important;
+}
+.tpadding-20
+{
+	padding-top: 20px;
+}
+.second-bar {
+  border-top: 1px solid #EEEEEE;
+  padding-top: 10px;
+  font-size: 16px;
+}
+
+.navbar.guest-nav {
+  min-height: 72px !important;
+  height: auto !important;
+  position: static !important;
+}
+.navbar.guest-nav .navbar-brand.fans {
+  padding-top: 12px;
+}
+.navbar.guest-nav .navbar-form {
+  margin-top: 10px;
+}
+.navbar.guest-nav .navbar-form .form-group {
+  vertical-align: top;
+}
+.navbar.guest-nav .navbar-form .form-group .form-control {
+  background: #F8FAFC;
+}
+@media (max-width: 768px) {
+  .navbar.guest-nav .navbar-form .form-group .checkbox input[type="checkbox"] {
+    margin-left: 0px;
+  }
+}
+.navbar.guest-nav .navbar-form .mail-form {
+  margin-right: 7px;
+}
+.navbar.guest-nav .navbar-form .checkbox,
+.navbar.guest-nav .navbar-form .forgot-password {
+  display: block;
+}
+.navbar.guest-nav .navbar-form .btn-submit {
+  padding: 6px 12px;
+}
+.navbar.guest-nav .navbar-form .forgot-password {
+  font-size: 11px;
+  padding-top: 5px;
+  text-align: right;
+}
+.welcome-message h2
+{
+	font-size: 26px;
+	line-height: 15px !important;
+	font-weight: 300;
+}
+.welcome-message
+{
+	padding-bottom: 25px;
+}
+.welcome-message p
+{
+  margin-bottom: 0px;
+}
+.register-heading
+{
+	font-size: 22px;
+  line-height: 0px !important;
+  font-weight: 300;
+  margin-top: 10px;
+  padding-bottom: 20px;
+}
+.features-list h2
+{
+	font-size: 22px;
+  line-height: 0px !important;
+  font-weight: 300;
+  margin-top: 10px;
+  padding-bottom: 20px;
+}
+.features-list li
+{
+	font-size: 16px;
+  font-weight: 300;
+  padding-top: 20px;
+}
+.features-list li i
+{
+	font-size: 26px;
+  color: #7F8FA4;
+  vertical-align: middle;
+  padding-right: 10px;
+}

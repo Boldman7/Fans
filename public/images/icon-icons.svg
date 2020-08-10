@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   id="svg2"
+   width="263"
+   height="263"
+   viewBox="0 0 263 263">
+  <metadata
+     id="metadata8">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs6" />
+  <g
+     id="layer1"
+     transform="translate(-221.48123,-100.33329)" />
+  <g
+     style="stroke-width:0.99001414"
+     transform="matrix(1.0202749,0,0,1,-4.4764592,0)"
+     id="g830">
+    <rect
+       rx="37.244865"
+       ry="38"
+       y="88.000015"
+       x="23.518768"
+       height="175"
+       width="70"
+       id="rect842"
+       style="fill:#0095dd;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.97004247;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke" />
+    <rect
+       ry="38"
+       y="88.000015"
+       x="173.51877"
+       height="175"
+       width="70"
+       id="rect842-3"
+       style="fill:#0095dd;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:2.97004247;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:markers fill stroke"
+       rx="37.244865" />
+    <path
+       id="path859"
+       d="m 90.869298,195.00002 c 4.88092,-25 76.053092,-31.68325 84.298962,0 l 0.35052,-60 c -3.31238,25 -66.72062,35 -85.000002,0 z"
+       style="fill:#0095dd;fill-opacity:1;fill-rule:evenodd;stroke:#0095dd;stroke-width:0.99001414px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <circle
+       r="35"
+       cy="37.389694"
+       cx="58.5"
+       id="path865"
+       style="fill:#ffd42a;fill-opacity:1;fill-rule:evenodd;stroke:#007cdd;stroke-width:2.97004247;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0;paint-order:markers fill stroke" />
+    <circle
+       r="35"
+       cy="36.309875"
+       cx="206.80984"
+       id="path865-6"
+       style="fill:#4d4d4d;fill-opacity:1;fill-rule:evenodd;stroke:#007cdd;stroke-width:2.97004247;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0;paint-order:markers fill stroke" />
+  </g>
+</svg>
