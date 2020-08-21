@@ -127,7 +127,8 @@ Route::post('/member/updatepage-role', 'TimelineController@assignPageMemberRole'
 Route::get('/post/{post_id}', 'TimelineController@singlePost');
 
 Route::get('allnotifications', 'TimelineController@allNotifications');
-
+Route::get('/mylists', 'TimelineController@showMyLists');
+Route::get('/mylist/{list_type_id}', 'TimelineController@showSpecificList');
 
 /*
 |--------------------------------------------------------------------------
@@ -449,6 +450,7 @@ Route::group(['prefix' => 'ajax', 'middleware' => ['auth']], function () {
     Route::post('post-delete', 'TimelineController@deletePost');
     Route::post('page-delete', 'TimelineController@deletePage');
     Route::post('share-post', 'TimelineController@sharePost');
+    Route::post('send-tip-post', 'TimelineController@sendTipPost');
     Route::post('page-liked', 'TimelineController@pageLiked');
     // Route::post('get-soundcloud-results', 'TimelineController@getSoundCloudResults');
     // Route::post('join-group', 'TimelineController@joiningGroup');
@@ -501,6 +503,10 @@ Route::group(['prefix' => 'ajax', 'middleware' => ['auth']], function () {
     Route::post('save-timeline', 'TimelineController@saveTimeline');
     Route::post('save-post', 'TimelineController@savePost');
     Route::post('pin-post', 'TimelineController@pinPost');
+    Route::post('update-user-list', 'TimelineController@updateUserList');
+    Route::post('get-user-list', 'TimelineController@getUserList');
+    Route::post('add-new-user-list', 'TimelineController@addNewUserList');
+    Route::post('get-lists-sort-by', 'TimelineController@getListsSortBy');
 
 });
 

@@ -23,6 +23,8 @@ use App\Subscription;
 use App\Timeline;
 use App\User;
 use App\Wallpaper;
+use App\UserList;
+use App\UserListType;
 use Carbon\Carbon;
 use Cassandra\Time;
 use DB;
@@ -1275,13 +1277,30 @@ class TimelineController extends AppBaseController
 
             $id = $user->id;
 
-            $posts = Post::WhereIn('id', function ($query1) use ($id) {
-                $query1->select('post_id')
-                    ->from('pinned_posts')
-                    ->where('user_id', $id)
-                    ->where('active', 1);
-            })->orWhere('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
-    
+            if (Auth::user()->id == $id) {
+                $posts = Post::WhereIn('id', function ($query1) use ($id) {
+                    $query1->select('post_id')
+                        ->from('pinned_posts')
+                        ->where('user_id', $id)
+                        ->where('active', 1);
+                })->orWhere('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+            } else {
+                $posts = Post::Where('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+            }
+
+            $user_lists = UserListType::where(['user_id' => Auth::user()->id])->with('lists')->get();
+
+            if (!empty($user_lists)) {
+
+                foreach ($user_lists as $user_list) {
+                    if (UserList::where(['list_type_id' => $user_list->id, 'saved_user_id' => $id])->get()->isEmpty()) {
+                        $user_list->state = 0;
+                    } else {
+                        $user_list->state = 1;
+                    }
+                }
+            }
+
             if ($timeline->type == 'user') {
                 $follow_user_status = '';
                 $user = User::where('timeline_id', $timeline['id'])->first();
@@ -1340,12 +1359,28 @@ class TimelineController extends AppBaseController
             $id = $user->id;
 //            $posts = $timeline->posts()->where('active', 1)->orderBy('created_at', 'desc')->with('comments')->paginate(Setting::get('items_page'));
 
-            $posts = Post::WhereIn('id', function ($query1) use ($id) {
-                $query1->select('post_id')
-                    ->from('pinned_posts')
-                    ->where('user_id', $id)
-                    ->where('active', 1);
-            })->orWhere('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+            if (Auth::user()->id == $id) {
+                $posts = Post::WhereIn('id', function ($query1) use ($id) {
+                    $query1->select('post_id')
+                        ->from('pinned_posts')
+                        ->where('user_id', $id)
+                        ->where('active', 1);
+                })->orWhere('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+            } else {
+                $posts = Post::Where('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+            }
+            $user_lists = UserListType::where(['user_id' => Auth::user()->id])->with('lists')->get();
+
+            if (!empty($user_lists)) {
+
+                foreach ($user_lists as $user_list) {
+                    if (UserList::where(['list_type_id' => $user_list->id, 'saved_user_id' => $id])->get()->isEmpty()) {
+                        $user_list->state = 0;
+                    } else {
+                        $user_list->state = 1;
+                    }
+                }
+            }
 
             if ($timeline->type == 'user') {
                 $follow_user_status = '';
@@ -1387,7 +1422,7 @@ class TimelineController extends AppBaseController
             // liked_posts
             $liked_post = \Illuminate\Support\Facades\DB::table('post_likes')->where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->get();
     
-            return $theme->scope('timeline/posts', compact('timeline', 'liked_post', 'user', 'posts', 'liked_pages', 'followRequests', 'joined_groups', 'own_pages', 'own_groups', 'follow_user_status', 'following_count', 'followers_count', 'follow_confirm', 'user_post', 'timeline_post', 'joined_groups_count', 'next_page_url', 'user_events', 'guest_events'))->render();
+            return $theme->scope('timeline/posts', compact('timeline', 'liked_post', 'user', 'posts', 'liked_pages', 'followRequests', 'joined_groups', 'own_pages', 'own_groups', 'follow_user_status', 'following_count', 'followers_count', 'follow_confirm', 'user_post', 'timeline_post', 'joined_groups_count', 'next_page_url', 'user_events', 'guest_events', 'user_lists'))->render();
         
         }
     }
@@ -2347,6 +2382,249 @@ class TimelineController extends AppBaseController
             return response()->json(['status' => '200', 'type' => 'unpin', 'message' => 'Post unpinned successfully']);
         }
     }
+
+    public function updateUserList(Request $request)
+    {
+
+//        $user_id = Auth::user()->id;
+//        Auth::user()->userList()->where(['list_type_id' => $request->list_type_id, 'saved_user_id' => $request->saved_user_id])->get()->isEmpty()
+
+        $user_list = UserList::where(['user_id' => Auth::user()->id, 'saved_user_id' => $request->saved_user_id, 'list_type_id' => $request->list_type_id])->first();
+
+        if(empty($user_list))
+        {
+
+            $user_list = new UserList;
+
+            $user_list->user_id = Auth::user()->id;
+            $user_list->saved_user_id = $request->saved_user_id;
+            $user_list->list_type_id = $request->list_type_id;
+
+            $user_list->save();
+
+            return response()->json(['status' => '200', 'type' => 'add', 'message' => 'Added successfully']);
+        }
+        else
+        {
+            $user_list->delete();
+            return response()->json(['status' => '200', 'type' => 'remove', 'message' => 'Removed successfully']);
+        }
+    }
+
+    public function getUserList(Request $request)
+    {
+
+//        $user_id = Auth::user()->id;
+//        Auth::user()->userList()->where(['list_type_id' => $request->list_type_id, 'saved_user_id' => $request->saved_user_id])->get()->isEmpty()
+
+        $user_lists = UserListType::where(['user_id' => Auth::user()->id])->with('lists')->get();
+
+        if (!empty($user_lists)) {
+
+            foreach ($user_lists as $user_list) {
+                if (UserList::where(['list_type_id' => $user_list->id, 'saved_user_id' => $request->saved_user_id])->get()->isEmpty()) {
+                    $user_list->state = 0;
+                } else {
+                    $user_list->state = 1;
+                }
+            }
+        }
+
+        return response()->json(['user_lists' => $user_lists]);
+
+//        if(empty($user_list))
+//        {
+//
+//            $user_list = new UserList;
+//
+//            $user_list->user_id = Auth::user()->id;
+//            $user_list->saved_user_id = $request->saved_user_id;
+//            $user_list->list_type_id = $request->list_type_id;
+//
+//            $user_list->save();
+//
+//            return response()->json(['status' => '200', 'type' => 'add', 'message' => 'Added successfully']);
+//        }
+//        else
+//        {
+//            $user_list->delete();
+//            return response()->json(['status' => '200', 'type' => 'remove', 'message' => 'Removed successfully']);
+//        }
+    }
+
+
+    public function getListsSortBy(Request $request)
+    {
+
+        $sort_by = $request->sort_by;
+        $order_by = $request->order_by;
+
+        $user_lists = $this->getUsersListOfCurrentUser($sort_by, $order_by);
+
+        return response()->json(['status' => '200', 'user_lists' => $user_lists]);
+    }
+
+    public function getUsersListOfCurrentUser($sort_by, $order_by)
+    {
+        if ($sort_by == 'recent')
+            $user_lists = UserListType::where(['user_id' => Auth::user()->id])->orderBy('created_at', $order_by)->with('lists')->get();
+        else
+            $user_lists = UserListType::where(['user_id' => Auth::user()->id])->with('lists')->get();
+
+        if (!empty($user_lists)) {
+            foreach ($user_lists as $user_list) {
+                $user_list->count = count($user_list->lists);
+            }
+        }
+
+        $lists = array();
+
+        foreach ($user_lists as $user_list) {
+
+            $list = array();
+            $list['name'] = $user_list->list_type;
+            $list['count'] = $user_list->count;
+            $list['id'] = $user_list->id;
+            $list['created_at'] = $user_list->created_at;
+
+            $lists[] = $list;
+        }
+
+        $following_count = Auth::user()->following()->where('status', '=', 'approved')->get()->count();
+        $followers_count = Auth::user()->followers()->where('status', '=', 'approved')->get()->count();
+
+        $list = array();
+        $list['name'] = trans('common.following-1');
+        $list['count'] = $following_count;
+        $list['id'] = 'following';
+        $list['created_at'] = Auth::user()->created_at;
+        $lists[] = $list;
+
+        $list = array();
+        $list['name'] = trans('common.followers');
+        $list['count'] = $followers_count;
+        $list['id'] = 'followers';
+        $list['created_at'] = Auth::user()->created_at;
+        $lists[] = $list;
+
+        $sorted_lists = array();
+        foreach ($lists as $key => $row) {
+
+            if ($sort_by == 'name')
+                $sorted_lists[$key] = $row['name'];
+            else if ($sort_by == 'people')
+                $sorted_lists[$key] = $row['count'];
+            else if ($sort_by == 'recent')
+                $sorted_lists[$key] = $row['created_at'];
+        }
+
+        array_multisort($sorted_lists, $order_by == 'asc' ? SORT_ASC : SORT_DESC, $lists);
+
+        return $lists;
+    }
+
+    public function addNewUserList(Request $request)
+    {
+
+        $user_lists = UserListType::where(['user_id' => Auth::user()->id])->get();
+
+        foreach ($user_lists as $user_list) {
+            if (!strcasecmp($user_list->list_type, $request->new_list_name)) {
+                return response()->json(['status' => '202', 'message' => 'This name exists already.']);
+            }
+        }
+
+        $user_list_type = new UserListType;
+
+        $user_list_type->user_id = Auth::user()->id;
+        $user_list_type->list_type = $request->new_list_name;
+
+        $user_list_type->save();
+        return response()->json(['status' => '200', 'type' => 'add', 'message' => 'Added successfully']);
+    }
+
+    public function showMyLists()
+    {
+        $user_lists = $this->getUsersListOfCurrentUser('name', 'asc');
+
+        $trending_tags = trendingTags();
+        $suggested_users = suggestedUsers();
+        $suggested_groups = suggestedGroups();
+        $suggested_pages = suggestedPages();
+
+        $following_count = Auth::user()->following()->where('status', '=', 'approved')->get()->count();
+        $followers_count = Auth::user()->followers()->where('status', '=', 'approved')->get()->count();
+
+        $theme = Theme::uses('default')->layout('default');
+        $theme->setTitle(trans('common.lists').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
+
+        return $theme->scope('timeline/my-lists', compact( 'suggested_users', 'trending_tags', 'suggested_groups', 'suggested_pages', 'user_lists', 'following_count', 'followers_count'))->render();
+    }
+
+    public function showSpecificList($list_type_id) {
+
+        $following_count = Auth::user()->following()->where('status', '=', 'approved')->get()->count();
+        $followers_count = Auth::user()->followers()->where('status', '=', 'approved')->get()->count();
+        $suggested_users = suggestedUsers();
+
+        $saved_users = array();
+
+        if ($list_type_id == 'followers') {
+
+            $saved_users = Auth::user()->followers()->where('status', '=', 'approved')->get();
+            $list_type_name = "Fans";
+
+            $theme = Theme::uses('default')->layout('default');
+            $theme->setTitle(trans('common.followers-1').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
+
+        } else if ($list_type_id == 'following') {
+
+            $saved_users = Auth::user()->following()->where('status', '=', 'approved')->get();
+            $list_type_name = "Followers";
+
+            $theme = Theme::uses('default')->layout('default');
+            $theme->setTitle(trans('common.following').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
+
+        } else {
+
+            $saved_user_list = UserList::where(['list_type_id' => $list_type_id])->with('savedUsers')->get();
+
+            $list_type = UserListType::where(['id' => $list_type_id])->first();
+            $list_type_name = $list_type->list_type;
+
+            foreach ($saved_user_list as $key => $list) {
+                $saved_users[$key] = $list->savedUsers;
+            }
+
+            $theme = Theme::uses('default')->layout('default');
+            $theme->setTitle($list_type_name.' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
+
+        }
+
+        return $theme->scope('timeline/my-list', compact( 'suggested_users', 'trending_tags', 'suggested_groups', 'suggested_pages', 'user_lists', 'following_count', 'followers_count', 'saved_users', 'list_type_id', 'list_type_name'))->render();
+    }
+
+    public function sendTipPost(Request $request)
+    {
+        $post = Post::findOrFail($request->post_id);
+        $posted_user = $post->user;
+
+        $post->tip()->attach(Auth::user()->id, ['amount' => $request->amount, 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
+        $post->notifications_user()->attach(Auth::user()->id);
+
+        $user = User::find(Auth::user()->id);
+        //Notify the user for post like
+        $notify_message = 'sent tip for your post';
+        $notify_type = 'tip_post';
+        $status_message = 'success';
+
+        if ($post->user->id != Auth::user()->id) {
+            Notification::create(['user_id' => $post->user->id, 'post_id' => $post->id, 'notified_by' => Auth::user()->id, 'description' => Auth::user()->name.' '.$notify_message, 'type' => $notify_type]);
+        }
+
+        return response()->json(['status' => '200', 'message' => $status_message]);
+    }
+
 
     public function switchLanguage(Request $request)
     {

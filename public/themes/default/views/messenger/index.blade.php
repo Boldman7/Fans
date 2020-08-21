@@ -97,7 +97,7 @@
                                 </div>
 
                                 <div class="input-group new-message">
-                                    
+
                                         <input class="form-control post-message" autocomplete="off" name="message" v-on:keyup.enter="postNewConversation()" v-model="messageBody" v-if="newConversation">
                                         <input class="form-control post-message" autocomplete="off" name="message" v-on:keyup.enter="postMessage(currentConversation)" v-model="messageBody" v-else>
                                         <span class="input-group-btn">

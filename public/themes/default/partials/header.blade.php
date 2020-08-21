@@ -224,6 +224,8 @@
 
                                             <li class="{{ Request::segment(3) == 'general' ? 'active' : '' }}"><a href="{{ url('/'.Auth::user()->username.'/settings/general') }}"><i class="fa fa-cog" aria-hidden="true"></i>{{ trans('common.settings') }}</a></li>
 
+                                            <li class=""><a href="{{ url('/mylists') }}"><i class="fa fa-list" aria-hidden="true"></i>{{ trans('common.lists') }}</a></li>
+
                                             <li class=""><a href="{{ url('/'.Auth::user()->username.'/saved') }}"><i class="fa fa-bookmark" aria-hidden="true"></i>{{ trans('common.saved_post') }}</a></li>
 
                                             <li class=""><a href="{{ url(Auth::user()->username.'/settings/addbank') }}"><i class="fa fa-university" aria-hidden="true"></i>{{ trans('common.add_bank') }}</a></li>

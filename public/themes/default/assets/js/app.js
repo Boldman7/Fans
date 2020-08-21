@@ -143,7 +143,177 @@ $(function () {
             }
         });
     });
-    
+
+    $(".modal-list-item .red-checkbox").on("change", function() {
+
+        var elementId = "#" + this.id;
+
+        $(elementId).attr('disabled', 'disabled');
+
+        var typeId = this.id.substring(10);
+
+        $.post(SP_source() + 'ajax/update-user-list', {list_type_id: typeId, saved_user_id: $("#saved-user-id").val()}, function(data) {
+
+            if (data.status == 200) {
+
+                $(elementId).removeAttr('disabled');
+                notify(data.message,'success');
+            }
+            else {
+
+                if ($(elementId).is(":checked"))
+                    $(elementId).prop('checked', false);
+                else
+                    $(elementId).prop('checked', true);
+
+                notify(data.message,'warning');
+            }
+        });
+    });
+
+
+    $( "#listsModal" ).on('shown.bs.modal', function(){
+        console.log("ok");
+
+        $.post(SP_source() + 'ajax/get-user-list', {saved_user_id: $("#saved-user-id").val()}, function(data) {
+
+            if (data.status == 200) {
+            }
+            else {
+
+            }
+        });
+
+    });
+
+    $( "#newListModal" ).on('shown.bs.modal', function(){
+
+        $("#listsModal").modal('hide');
+    });
+
+    $("#etNewListName").on("input", function() {
+        var myLength = $("#etNewListName").val().length;
+
+        if (myLength > 0)
+            $("#saveNewList").removeAttr("disabled");
+        else
+            $("#saveNewList").attr("disabled", "disabled");
+    });
+
+    $("#cancelNewList").click(function() {
+        $("#listsModal").modal("show");
+        $("#etNewListName").val('');
+    });
+
+    $("#saveNewList").click(function() {
+
+        $.post(SP_source() + 'ajax/add-new-user-list', {saved_user_id: $("#saved-user-id").val(), new_list_name: $("#etNewListName").val()}, function(data) {
+
+            if (data.status == 200) {
+                notify(data.message,'success');
+                $("#newListModal").modal("hide");
+                location.reload();
+            }
+            else if (data.status == 202) {
+                notify(data.message,'warning');
+            } else {
+
+            }
+        });
+    });
+
+    $("#etTipAmount").on("input", function() {
+        var myLength = $("#etTipAmount").val().length;
+
+        if (myLength > 0)
+            $("#sendTip").removeAttr("disabled");
+        else
+            $("#sendTip").attr("disabled", "disabled");
+    });
+
+    $("#sendTip").click(function() {
+
+        $.post(SP_source() + 'ajax/send-tip-post', {post_id: $("#post-id").val(), amount: $("#etTipAmount").val()}, function(data) {
+
+            if (data.status == 200) {
+
+                notify(data.message,'success');
+                $("#sendTipModal").modal("hide");
+                location.reload();
+            }
+            else {
+
+            }
+        });
+    });
+
+    $("input[name = 'sort']").change(function() {
+
+        $.post(SP_source() + 'ajax/get-lists-sort-by', {sort_by: $("input[name = 'sort']:checked").val(), order_by: $("input[name = 'order']:checked").val()}, function(data) {
+
+            if (data.status == 200) {
+
+                var userLists = data.user_lists;
+                var userList;
+                $(".my-lists").html("");
+
+                var myListsHTML = "";
+
+                for (userList of userLists) {
+
+                    var myRow =
+                        "                    <a href=\"" + base_url  + 'mylist/' + userList.id + "\">\n" +
+                        "                        <div class=\"modal-mylist-item\">\n" +
+                        "                            <span class=\"red-mylist-label\">" + userList.name + "</span>\n" +
+                        "                            <span class=\"red-mylist-count-label\">" + userList.count + "</span>\n" +
+                        "                        </div>\n" +
+                        "                    </a>\n";
+
+                    myListsHTML += myRow;
+                }
+
+                $(".my-lists").html(myListsHTML);
+            }
+            else {
+
+            }
+        });
+    });
+
+
+    $("input[name = 'order']").change(function() {
+
+        $.post(SP_source() + 'ajax/get-lists-sort-by', {sort_by: $("input[name = 'sort']:checked").val(), order_by: $("input[name = 'order']:checked").val()}, function(data) {
+
+            if (data.status == 200) {
+
+                var userLists = data.user_lists;
+                var userList;
+                $(".my-lists").html("");
+
+                var myListsHTML = "";
+
+                for (userList of userLists) {
+
+                    var myRow =
+                        "                    <a href=\"" + base_url  + 'mylist/' + userList.id + "\">\n" +
+                        "                        <div class=\"modal-mylist-item\">\n" +
+                        "                            <span class=\"red-mylist-label\">" + userList.name + "</span>\n" +
+                        "                            <span class=\"red-mylist-count-label\">" + userList.count + "</span>\n" +
+                        "                        </div>\n" +
+                        "                    </a>\n";
+
+                    myListsHTML += myRow;
+                }
+
+                $(".my-lists").html(myListsHTML);
+            }
+            else {
+
+            }
+        });
+    });
+
     // Unsave a page from saved list of pages
     $('body').on('click','.unsave-timeline',function(e){
       e.preventDefault();
@@ -2130,6 +2300,7 @@ $('#add-members-page').on('keyup',function(){
 
 
         $('.postmessage').on('keypress',function(e) {
+
             if(e.keyCode==13)
             {
                 e.preventDefault();

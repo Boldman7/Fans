@@ -4,8 +4,9 @@
 	<div class="row">
 		<div class="col-md-12">
 			<?php echo Theme::partial('user-header',compact('timeline', 'liked_post', 'user','followRequests','following_count',
-			'followers_count','follow_confirm','user_post','joined_groups_count','guest_events')); ?>				
-			
+			'followers_count','follow_confirm','user_post','joined_groups_count','guest_events')); ?>
+
+
 			<div class="row">
 				<div class=" timeline">
 					<div class="col-md-4">

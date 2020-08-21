@@ -188,6 +188,11 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Post', 'pinned_posts', 'user_id', 'post_id');
     }
 
+    public function userList()
+    {
+        return $this->belongsToMany('App\UserListType', 'user_lists', 'user_id', 'list_type_id');
+    }
+
     public function own_pages()
     {
         $admin_role_id = Role::where('name', '=', 'admin')->first();
@@ -256,6 +261,13 @@ class User extends Authenticatable
     public function getUserSettings($user_id)
     {
         $result = DB::table('user_settings')->where('user_id', $user_id)->first();
+
+        return $result;
+    }
+
+    public function getUserListTypes($user_id)
+    {
+        $result = DB::table('user_list_types')->where('user_id', $user_id)->get();
 
         return $result;
     }

@@ -524,6 +524,13 @@ return [
     'viewers' => 'Viewers',
     'tips' => 'Tips',
     'restrict' => 'Restrict',
-    'copy_link_to_profile' => 'Copy link to profile'
+    'copy_link_to_profile' => 'Copy link to profile',
+    'add_to_remove_from_lists' => 'Add to / remove from lists',
+    'save_to' => 'SAVE TO...',
+    'lists' => 'Lists',
+    'following-1' => 'Following',
+    'no_users_found' => 'No Users found!',
+    'create_new_list' => 'Create New LIst',
+    'send_tip' => 'Send Tip'
 
 ];

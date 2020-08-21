@@ -242,6 +242,13 @@
     transition: max-height 0.4s;
 }
 
+
+.profile-dropdown-icon {
+    margin-right: 5px;
+    color: #FFFFFF;
+    font-size: 20px;
+}
+
 .profile-dropdown-menu {
 
     color: #859AB5;
@@ -249,12 +256,6 @@
     position: absolute;
     right: 0;
     z-index: 1;
-}
-
-.profile-dropdown-icon {
-    margin-right: 5px;
-    color: #FFFFFF;
-    font-size: 20px;
 }
 
 .profile-dropdown-menu-content {
@@ -269,6 +270,7 @@
     margin-left: auto;
     position: relative;
     z-index: 1;
+    margin-right: 7px;
 
     font-size: 24px;
     width: 1em;
@@ -288,4 +290,213 @@
     color: #354052;
     font-size: 14px;
     font-family: 'Open Sans', sans-serif;
+}
+
+.tab {
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Style the buttons that are used to open the tab content */
+.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+.tablinks .g-icon {
+
+    -webkit-transform: none;
+    transform: none;
+}
+
+.b-tabs__nav__item .g-icon {
+    margin-right: 5px;
+}
+
+.tablinks {
+    display: flex;
+    font-size: 16px;
+}
+
+.lists-modal .g-icon {
+    -webkit-transform: none;
+    transform: none;
+    margin-bottom: -5px;
+    margin-right: 5px;
+    font-size: 24px;
+}
+
+.lists-modal-title {
+    font-size: 16px;
+}
+
+.red-checkbox {
+    margin-top: 0px !important;
+    cursor: pointer;
+}
+
+.modal-list-item {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e5e5e5;
+    margin-left: 10px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.red-list-label {
+    padding-left: 14px;
+    margin-bottom: 0px;
+    font-size: 15px;
+    font-weight: bolder;
+    width: 100%;
+    cursor: pointer;
+}
+
+.red-mylist-label {
+    color: #354052 !important;
+    padding-left: 5px;
+    margin-bottom: 0px;
+    font-size: 16px;
+    font-weight: bolder;
+    width: 100%;
+    cursor: pointer;
+}
+
+.red-mylist-count-label {
+    color: #8a96a3 !important;
+    padding-left: 5px;
+    margin-bottom: 0px;
+    font-size: 13px;
+    font-weight: bolder;
+    cursor: pointer;
+}
+
+.modal-mylist-item {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #e5e5e5;
+    margin-left: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.d-block {
+    display: block;
+}
+
+.bottom-border {
+    border-bottom: 1px solid #e5e5e5 !important;
+}
+
+.btn-back .g-icon{
+
+    color: #354052 !important;
+    -webkit-transform: none;
+    transform: none;
+    margin-right: 10px;
+}
+
+.user-list-item {
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 20px !important;
+}
+
+.g-btn{
+    margin-top: 10px;
+    margin-left: 15px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    border: none;
+    color: #00aff0;
+    padding: 0;
+    background-color: transparent;
+    font: inherit;
+    min-width: unset;
+    text-transform: unset;
+}
+
+
+.lists-dropdown-menu {
+    color: #859AB5;
+    margin-top: 15px;
+    z-index: 1;
+}
+
+.lists-dropdown-menu-content {
+    right: 0;
+    left: auto !important;
+}
+
+.lists-dropdown-icon {
+    margin-right: 5px;
+    color: #00aff0;
+    font-size: 20px;
+}
+
+.lists-dropdown-menu .dropdown-menu .main-link a {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.lists-dropdown-menu .dropdown-menu li a {
+    color: #354052;
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.sort-icon{
+
+    -webkit-transform: none !important;
+    transform: none !important;
+    margin-left: auto;
+    position: relative;
+    z-index: 1;
+    margin-right: 7px;
+
+    font-size: 24px;
+    width: 1em;
+    height: 1em;
+    min-width: 1em;
+    display: inline-block;
+    fill: currentColor;
+    line-height: 1;
+}
+
+.form-check {
+
+    height: 40px;
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    margin-right: 5px;
+    cursor: pointer;
 }

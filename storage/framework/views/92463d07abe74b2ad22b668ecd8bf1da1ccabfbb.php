@@ -229,6 +229,8 @@
 
                                             <li class="<?php echo e(Request::segment(3) == 'general' ? 'active' : ''); ?>"><a href="<?php echo e(url('/'.Auth::user()->username.'/settings/general')); ?>"><i class="fa fa-cog" aria-hidden="true"></i><?php echo e(trans('common.settings')); ?></a></li>
 
+                                            <li class=""><a href="<?php echo e(url('/mylists')); ?>"><i class="fa fa-list" aria-hidden="true"></i><?php echo e(trans('common.lists')); ?></a></li>
+
                                             <li class=""><a href="<?php echo e(url('/'.Auth::user()->username.'/saved')); ?>"><i class="fa fa-bookmark" aria-hidden="true"></i><?php echo e(trans('common.saved_post')); ?></a></li>
 
                                             <li class=""><a href="<?php echo e(url(Auth::user()->username.'/settings/addbank')); ?>"><i class="fa fa-university" aria-hidden="true"></i><?php echo e(trans('common.add_bank')); ?></a></li>

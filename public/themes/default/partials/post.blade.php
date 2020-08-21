@@ -304,10 +304,6 @@
           </div>
 
 
-
-
-
-
         <?php
               $links = preg_match_all("/(?i)\b((?:[a-z][\w-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))/", $post->description, $matches);
 
@@ -434,7 +430,6 @@
         </li>
         @endif
 
-
       </ul>
     @endif
     </div>
@@ -486,6 +481,11 @@
             <li class="hidden"><a href="#" class="share-post share" data-post-id="{{ $post->id }}"><i class="fa fa-share-square-o"></i>{{ trans('common.share') }}</a></li>
             <li><a href="#" class="share-post shared" data-post-id="{{ $post->id }}"><i class="fa fa fa-share-square-o"></i>{{ trans('common.unshare') }}</a></li>
           @endif
+
+          <li>
+              <a href="#" class="send-tip-post" data-toggle="modal" data-target="#sendTipModal"><i class="fa fa-dollar"></i>{{ trans('common.send_tip') }}</a>
+          </li>
+
         @endif
 
       </ul>
@@ -529,6 +529,34 @@
     @endif
     @endif
   </div>
+
+<div id="sendTipModal" class="tip-modal modal fade" role="dialog" tabindex='1'>
+
+    <input type="hidden" value="{{$post->id}}" id="post-id">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="modal-header lists-modal">
+                    {{--						<button type="button" class="close" data-dismiss="modal">&times;</button>--}}
+                    <h3 class="modal-title lists-modal-title">
+                        {{ trans("common.send_tip") }}
+                    </h3>
+                </div>
+
+                <div class="b-stats-row__content">
+                    <input type="number" id="etTipAmount" class="form-control" placeholder="Tip amount" step="0.1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="cancelSendTip" class="btn btn-default" data-dismiss="modal">{{ trans('common.cancel') }}</button>
+                <button type="button" id="sendTip" class="btn btn-primary" disabled>{{ trans('common.send_tip') }}</button>
+                <a href="{{url(Auth::user()->username).'/settings/addpayment' }}" id="addPayment" class="btn btn-warning">{{ trans('common.add_payment') }}</a>
+            </div>
+        </div>
+
+    </div>
+</div>
 
 
 

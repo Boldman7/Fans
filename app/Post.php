@@ -43,6 +43,11 @@ class Post extends Model
         return $this->belongsToMany('App\User', 'post_likes', 'post_id', 'user_id');
     }
 
+    public function tip()
+    {
+        return $this->belongsToMany('App\User', 'post_tips', 'post_id', 'user_id');
+    }
+
     public function shares()
     {
         return $this->belongsToMany('App\User', 'post_shares', 'post_id', 'user_id');
