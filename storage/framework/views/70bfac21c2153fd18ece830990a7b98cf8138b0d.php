@@ -373,7 +373,7 @@
                                 <h4 class="modal-title">Subscribe <?php echo e($post->user->name); ?>'s posts</h4>
                             </div>
                             <div class="modal-body">
-                                    <img src="<?php echo e(url('user/gallery/locked.jpg')); ?>"  title="<?php echo e($post->user->name); ?>" alt="<?php echo e($post->user->name); ?>" style="display: block; margin-left: auto; margin-right: auto">
+                                    <img src="<?php echo e(url('user/gallery/locked.png')); ?>"  title="<?php echo e($post->user->name); ?>" alt="<?php echo e($post->user->name); ?>" style="display: block; margin-left: auto; margin-right: auto">
                                     <p  style="margin-left: auto; margin-right: auto">Monthly Subscribe <?php echo e($post->user->price); ?> US$</p>
                             </div>
                             <div class="modal-footer">

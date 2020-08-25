@@ -1277,29 +1277,29 @@ class TimelineController extends AppBaseController
 
             $id = $user->id;
 
-            if (Auth::user()->id == $id) {
-                $posts = Post::WhereIn('id', function ($query1) use ($id) {
-                    $query1->select('post_id')
-                        ->from('pinned_posts')
-                        ->where('user_id', $id)
-                        ->where('active', 1);
-                })->orWhere('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
-            } else {
+//            if (Auth::user()->id == $id) {
+//                $posts = Post::WhereIn('id', function ($query1) use ($id) {
+//                    $query1->select('post_id')
+//                        ->from('pinned_posts')
+//                        ->where('user_id', $id)
+//                        ->where('active', 1);
+//                })->orWhere('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+//            } else {
                 $posts = Post::Where('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
-            }
+//            }
 
-            $user_lists = UserListType::where(['user_id' => Auth::user()->id])->with('lists')->get();
-
-            if (!empty($user_lists)) {
-
-                foreach ($user_lists as $user_list) {
-                    if (UserList::where(['list_type_id' => $user_list->id, 'saved_user_id' => $id])->get()->isEmpty()) {
-                        $user_list->state = 0;
-                    } else {
-                        $user_list->state = 1;
-                    }
-                }
-            }
+//            $user_lists = UserListType::where(['user_id' => Auth::user()->id])->with('lists')->get();
+//
+//            if (!empty($user_lists)) {
+//
+//                foreach ($user_lists as $user_list) {
+//                    if (UserList::where(['list_type_id' => $user_list->id, 'saved_user_id' => $id])->get()->isEmpty()) {
+//                        $user_list->state = 0;
+//                    } else {
+//                        $user_list->state = 1;
+//                    }
+//                }
+//            }
 
             if ($timeline->type == 'user') {
                 $follow_user_status = '';
@@ -1360,12 +1360,12 @@ class TimelineController extends AppBaseController
 //            $posts = $timeline->posts()->where('active', 1)->orderBy('created_at', 'desc')->with('comments')->paginate(Setting::get('items_page'));
 
             if (Auth::user()->id == $id) {
-                $posts = Post::WhereIn('id', function ($query1) use ($id) {
+                $posts = (Post::WhereIn('id', function ($query1) use ($id) {
                     $query1->select('post_id')
                         ->from('pinned_posts')
                         ->where('user_id', $id)
                         ->where('active', 1);
-                })->orWhere('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+                })->orWhere('user_id', $id)->where('active', 1))->paginate(Setting::get('items_page'));
             } else {
                 $posts = Post::Where('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
             }

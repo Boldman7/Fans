@@ -17,12 +17,12 @@
 
         <!--<title>Fans Platform</title>-->
         <title>{{ Setting::get('site_title') }}</title>
-        
+
 
         <link href="{{ Theme::asset()->url('css/flag-icon.css') }}" rel="stylesheet">
         <link href="{{ Theme::asset()->url('css/custom.css') }}" rel="stylesheet">
         <link href="{{ url('css/extra.css') }}" rel="stylesheet">
-        
+
         {!! Theme::asset()->styles() !!}
 
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -40,12 +40,12 @@
         var theme_url = "{!! Theme::asset()->url('') !!}";
         </script>
         {!! Theme::asset()->scripts() !!}
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet"> 
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     </head>
     <body @if(Setting::get('enable_rtl') == 'on') class="direction-rtl" @endif>
-        
+
         {!! Theme::content() !!}
-        
+
         {!! Theme::partial('footer') !!}
 
         {!! Theme::asset()->container('footer')->scripts() !!}

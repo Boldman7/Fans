@@ -23,7 +23,7 @@
                                 <h4 class="modal-title">Subscribe {{$post->user->name}}'s posts</h4>
                             </div>
                             <div class="modal-body">
-                                    <img src="{{ url('user/gallery/locked.jpg') }}"  title="{{ $post->user->name }}" alt="{{ $post->user->name }}" style="display: block; margin-left: auto; margin-right: auto">
+                                    <img src="{{ url('user/gallery/locked.png') }}"  title="{{ $post->user->name }}" alt="{{ $post->user->name }}" style="display: block; margin-left: auto; margin-right: auto">
                                     <p  style="margin-left: auto; margin-right: auto">Monthly Subscribe {{$post->user->price}} US$</p>
                             </div>
                             <div class="modal-footer">
