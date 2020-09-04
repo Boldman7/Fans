@@ -24,12 +24,22 @@
                         </h4>
                         {{--						@if($suggested_user->payment != NULL && $suggested_user->payment->is_active == 1 && $suggested_user->payment->price > 0)--}}
                         @if($suggested_user->price >= 0)
-                            <div class="btn-follow">
-                                <a href="#" class="btn btn-default follow-user follow" data-price="{{ $suggested_user->price }}" data-timeline-id="{{ $suggested_user->timeline->id }}"> <i class="fa fa-heart"></i> {{ trans('common.follow') }}</a>
-                            </div>
-                            <div class="btn-follow hidden">
-                                <a href="#" class="btn btn-success follow-user unfollow" data-price="{{ $suggested_user->price }}" data-timeline-id="{{ $suggested_user->timeline->id }}"><i class="fa fa-check"></i> {{ trans('common.following') }}</a>
-                            </div>
+                            @if(!$suggested_user->followers->contains(Auth::user()->id))
+                                <div class="btn-follow">
+                                    <a href="#" class="btn btn-default follow-user follow" data-price="{{ $suggested_user->price }}" data-timeline-id="{{ $suggested_user->timeline->id }}"> <i class="fa fa-heart"></i> {{ trans('common.follow') }}</a>
+                                </div>
+                                <div class="btn-follow hidden">
+                                    <a href="#" class="btn btn-success follow-user unfollow" data-price="{{ $suggested_user->price }}" data-timeline-id="{{ $suggested_user->timeline->id }}"><i class="fa fa-check"></i> {{ trans('common.following') }}</a>
+                                </div>
+                            @else
+                                <div class="btn-follow hidden">
+                                    <a href="#" class="btn btn-default follow-user follow" data-price="{{ $suggested_user->price }}" data-timeline-id="{{ $suggested_user->timeline->id }}"> <i class="fa fa-heart"></i> {{ trans('common.follow') }}</a>
+                                </div>
+                                <div class="btn-follow">
+                                    <a href="#" class="btn btn-success follow-user unfollow" data-price="{{ $suggested_user->price }}" data-timeline-id="{{ $suggested_user->timeline->id }}"><i class="fa fa-check"></i> {{ trans('common.following') }}</a>
+                                </div>
+                            @endif
+
                         @endif
                     </div>
 

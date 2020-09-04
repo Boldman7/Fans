@@ -423,15 +423,17 @@
     <?php if(isset($user) == false || $user->followers->contains(Auth::user()->id) || $user->id == Auth::user()->id || $user->price == 0): ?>
       <ul class="actions-count list-inline">
 
-        <?php if($post->users_liked()->count() > 0): ?>
-        <?php
-        $liked_ids = $post->users_liked->pluck('id')->toArray();
-        $liked_names = $post->users_liked->pluck('name')->toArray();
-        ?>
         <li>
-          <a href="#" class="show-users-modal" data-html="true" data-heading="<?php echo e(trans('common.likes')); ?>"  data-users="<?php echo e(implode(',', $liked_ids)); ?>" data-original-title="<?php echo e(implode('<br />', $liked_names)); ?>"><span class="count-circle"><i class="fa fa-thumbs-up"></i></span> <?php echo e($post->users_liked->count()); ?> <?php echo e(trans('common.likes')); ?></a>
+            <?php if($post->users_liked()->count() > 0): ?>
+            <?php
+                $liked_ids = $post->users_liked->pluck('id')->toArray();
+                $liked_names = $post->users_liked->pluck('name')->toArray();
+            ?>
+              <a href="#" class="show-users-modal tag-like-<?php echo e($post->id); ?>" data-html="true" data-heading="<?php echo e(trans('common.likes')); ?>"  data-users="<?php echo e(implode(',', $liked_ids)); ?>" data-original-title="<?php echo e(implode('<br />', $liked_names)); ?>"><span class="count-circle"><i class="fa fa-thumbs-up"></i></span> <span class="circle-like-count circle-like-count-<?php echo e($post->id); ?>"><?php echo e($post->users_liked->count()); ?></span> <?php echo e(trans('common.likes')); ?></a>
+           <?php else: ?>
+                <a href="#" class="show-users-modal tag-like-<?php echo e($post->id); ?> hidden" data-html="true" data-heading="<?php echo e(trans('common.likes')); ?>" data-original-title=""><span class="count-circle"><i class="fa fa-thumbs-up"></i></span> <span class="circle-like-count circle-like-count-<?php echo e($post->id); ?>"></span> <?php echo e(trans('common.likes')); ?></a>
+            <?php endif; ?>
         </li>
-        <?php endif; ?>
 
         <?php if($post->comments->count() > 0): ?>
         <li>

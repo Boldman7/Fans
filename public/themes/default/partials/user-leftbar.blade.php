@@ -39,17 +39,17 @@
 
 				@if(!$user->followers->contains(Auth::user()->id))
 
-						<div class="col-md-6 col-sm-6 col-xs-6 left-col">
-							<a href="javascript:void(0);" class="btn btn-options btn-block follow-user btn-default follow" data-price="{{ $user->price }}"  data-timeline-id="{{ $timeline->id }}">
-								<i class="fa fa-heart"></i> {{ trans('common.follow') }}
-							</a>
-						</div>
+					<div class="col-md-6 col-sm-6 col-xs-6 left-col">
+						<a href="javascript:void(0);" class="btn btn-options btn-block follow-user btn-default follow" data-price="{{ $user->price }}"  data-timeline-id="{{ $timeline->id }}">
+							<i class="fa fa-heart"></i> {{ trans('common.follow') }}
+						</a>
+					</div>
 
-						<div class="col-md-6 col-sm-6 col-xs-6 hidden">
-							<a href="#" class="btn btn-options btn-block btn-success unfollow" data-price="{{ $user->price }}"  data-timeline-id="{{ $timeline->id }}">
-								<i class="fa fa-check"></i> {{ trans('common.following') }}
-							</a>
-						</div>
+					<div class="col-md-6 col-sm-6 col-xs-6 hidden">
+						<a href="#" class="btn btn-options btn-block btn-success unfollow" data-price="{{ $user->price }}"  data-timeline-id="{{ $timeline->id }}">
+							<i class="fa fa-check"></i> {{ trans('common.following') }}
+						</a>
+					</div>
 				@else
 
 					<div class="col-md-6 col-sm-6 col-xs-6 hidden">
@@ -78,14 +78,7 @@
 					&nbsp;
 				</div>
 
-				@if(!$user->followers->contains(Auth::user()->id))
-
-					<div class="col-md-offset-3 col-sm-offset-3 col-xs-offset-3 col-md-6 col-sm-6 col-xs-6 hidden">
-						<a href="#" class="btn btn-options btn-block btn-default unfollow" data-price="{{ $user->price }}"  data-timeline-id="{{ $timeline->id }}">
-							<i class="fa fa-ban"></i> {{ trans('common.restrict') }}
-						</a>
-					</div>
-				@else
+				@if($user->followers->contains(Auth::user()->id))
 
 					<div class="col-md-offset-3 col-sm-offset-3 col-xs-offset-3 col-md-6 col-sm-6 col-xs-6 left-col">
 						<a href="#" class="btn btn-options btn-block btn-default unfollow" data-price="{{ $user->price }}"  data-timeline-id="{{ $timeline->id }}">	<i class="fa fa-ban"></i> {{ trans('common.restrict') }}

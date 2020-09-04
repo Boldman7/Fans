@@ -20,20 +20,20 @@
                     <li class="main-link">
 
                         <div class="form-check">
-                            <input class="red-checkbox" type="radio" name="sort" id="sortByName" value="name" checked>
+                            <input class="red-checkbox" type="radio" name="sort-lists" id="sortByName" value="name" checked>
                             <label class="red-list-label" for="sortByName">
                                Name
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="red-checkbox" type="radio" name="sort" id="soryByRecent" value="recent">
-                            <label class="red-list-label" for="soryByRecent">
+                            <input class="red-checkbox" type="radio" name="sort-lists" id="sortByRecent" value="recent">
+                            <label class="red-list-label" for="sortByRecent">
                                 Recent
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="red-checkbox" type="radio" name="sort" id="soryByPeople" value="people">
-                            <label class="red-list-label" for="soryByPeople">
+                            <input class="red-checkbox" type="radio" name="sort-lists" id="sortByPeople" value="people">
+                            <label class="red-list-label" for="sortByPeople">
                                 People
                             </label>
                         </div>
@@ -44,13 +44,13 @@
                     <li class="main-link">
 
                         <div class="form-check">
-                            <input class="red-checkbox" type="radio" name="order" id="orderByASC" value="asc" checked>
+                            <input class="red-checkbox" type="radio" name="order-lists" id="orderByASC" value="asc" checked>
                             <label class="red-list-label" for="orderByASC">
                                 Ascending
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="red-checkbox" type="radio" name="order" id="orderByDESC" value="desc">
+                            <input class="red-checkbox" type="radio" name="order-lists" id="orderByDESC" value="desc">
                             <label class="red-list-label" for="orderByDESC">
                                 Descending
                             </label>

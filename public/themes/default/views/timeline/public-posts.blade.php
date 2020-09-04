@@ -11,7 +11,7 @@
 					</div>
 					<div class="col-md-8">
 						<div class="timeline-posts">
-							@if($posts->count() > 0)
+							@if(count($posts) > 0)
 								@foreach($posts as $post)
 									{!! Theme::partial('public-post',compact('post','timeline','next_page_url', 'user')) !!}
 								@endforeach

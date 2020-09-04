@@ -27,17 +27,47 @@
 												</use>
 											</svg>
 										</a>
-										<ul class="dropdown-menu profile-dropdown-menu-content">
+										<ul class="post-dropdown-menu dropdown-menu profile-dropdown-menu-content">
 											<li class="main-link">
 
 												<div class="form-check">
-													<input class="red-checkbox" type="radio" name="post-sort" id="sortByLatest" value="latest" checked>
+													<input class="red-checkbox" type="radio" name="period-post" id="periodAllTime" value="all" {{$period == 'all' ? "checked" : ""}}>
+													<label class="red-list-label" for="periodAllTime">
+														All time
+													</label>
+												</div>
+												<div class="form-check">
+													<input class="red-checkbox" type="radio" name="period-post" id="periodLastThreeM" value="3m" {{$period == '3m' ? "checked" : ""}}>
+													<label class="red-list-label" for="periodLastThreeM">
+														Last three months
+													</label>
+												</div>
+												<div class="form-check">
+													<input class="red-checkbox" type="radio" name="period-post" id="periodLastOneM" value="1m" {{$period == '1m' ? "checked" : ""}}>
+													<label class="red-list-label" for="periodLastOneM">
+														Last month
+													</label>
+												</div>
+												<div class="form-check">
+													<input class="red-checkbox" type="radio" name="period-post" id="periodLastW" value="1w" {{$period == '1w' ? "checked" : ""}}>
+													<label class="red-list-label" for="periodLastW">
+														Last week
+													</label>
+												</div>
+											</li>
+											<div class="divider">
+
+											</div>
+											<li class="main-link">
+
+												<div class="form-check">
+													<input class="red-checkbox" type="radio" name="sort-profile-post" id="sortByLatest" value="latest" {{$sort_by == 'latest' ? "checked" : ""}}>
 													<label class="red-list-label" for="sortByLatest">
 														Latest Posts
 													</label>
 												</div>
 												<div class="form-check">
-													<input class="red-checkbox" type="radio" name="post-sort" id="soryByLiked" value="liked">
+													<input class="red-checkbox" type="radio" name="sort-profile-post" id="soryByLiked" value="liked" {{$sort_by == 'liked' ? "checked" : ""}}>
 													<label class="red-list-label" for="soryByLiked">
 														Most liked
 													</label>
@@ -49,13 +79,13 @@
 											<li class="main-link">
 
 												<div class="form-check">
-													<input class="red-checkbox" type="radio" name="post-order" id="orderByASC" value="asc" checked>
+													<input class="red-checkbox" type="radio" name="order-profile-post" id="orderByASC" value="asc" {{$order_by == 'asc' ? "checked" : ""}}>
 													<label class="red-list-label" for="orderByASC">
 														Ascending
 													</label>
 												</div>
 												<div class="form-check">
-													<input class="red-checkbox" type="radio" name="post-order" id="orderByDESC" value="desc">
+													<input class="red-checkbox" type="radio" name="order-profile-post" id="orderByDESC" value="desc" {{$order_by == 'desc' ? "checked" : ""}}>
 													<label class="red-list-label" for="orderByDESC">
 														Descending
 													</label>
@@ -67,7 +97,7 @@
 							</div>
 
 						<div class="timeline-posts">
-							@if($posts->count() > 0)
+							@if(count($posts) > 0)
 								@foreach($posts as $post)
 									{!! Theme::partial('post',compact('post','timeline','next_page_url', 'user')) !!}
 								@endforeach

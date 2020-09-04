@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\URL;
 use Intervention\Image\Facades\Image;
 use LinkPreview\LinkPreview;
 use mysql_xdevapi\Exception;
@@ -287,18 +288,62 @@ class TimelineController extends AppBaseController
 
     public function getMorePosts(Request $request)
     {
-        $timeline = Timeline::where('username', $request->username)->first();
+        $period = 'all';
+        $sort_by = 'latest';
+        $order_by = 'asc';
 
-        $posts = $timeline->posts()->where('active', 1)->orderBy('created_at', 'desc')->with('comments')->paginate(Setting::get('items_page'));
+        $query_period = '';
+        $query_sortby = '';
+        $query_orderby = '';
+
+        if (isset($_GET['o'])) {
+            $order_by = $_GET['o'];
+
+            if ($order_by != "desc" && $order_by != "asc")
+                $order_by = "asc";
+        }
+
+        $startDate = date('y-m-d',strtotime("01-01-1970"));
+
+        if (isset($request->p)) {
+
+            $period = $request->p;
+
+            if ($period == '3m')
+                $startDate = date('y-m-d',strtotime(Carbon::now()->subMonth(3)));
+            else if ($period == '1m')
+                $startDate = date('y-m-d',strtotime(Carbon::now()->subMonth(1)));
+            else if ($period == '1w')
+                $startDate = date('y-m-d',strtotime(Carbon::now()->subWeek(1)));
+        }
+
+        $timeline = Timeline::where('username', $request->username)->first();
+        $user = User::where('timeline_id', $timeline['id'])->first();
+
+        $id = $user->id;
+
+        if (Auth::user()->id == $id) {
+            $posts = (Post::WhereIn('id', function ($query1) use ($id, $startDate) {
+                $query1->select('post_id')
+                    ->from('pinned_posts')
+                    ->where('user_id', $id)
+                    ->where('active', 1)
+                    ->whereDate('created_at', '>=', $startDate);
+            })->orWhere('user_id', $id)->whereDate('created_at', '>=', $startDate)->where('active', 1))->orderBy('created_at', $order_by == 'desc' ? 'asc' : 'desc')->with('comments')->paginate(Setting::get('items_page'));
+        } else {
+            $posts = Post::Where('user_id', $id)->whereDate('created_at', '>=', $startDate)->where('active', 1)->orderBy('created_at', $order_by == 'desc' ? 'asc' : 'desc')->with('comments')->paginate(Setting::get('items_page'));
+        }
+
+        $next_page_url = $posts->appends(['username' => $request->username])->nextPageUrl();
+
+        //$posts = $timeline->posts()->where('active', 1)->orderBy('created_at', 'desc')->with('comments')->paginate(Setting::get('items_page'));
         $theme = Theme::uses('default')->layout('default');
 
-
-        $user = User::where('timeline_id', $timeline['id'])->first();
         $isSubscribed = $user->followers()->where('follower_id', Auth::user()->id)->where('leader_id', $user->id)->get()->count() > 1 ? true : false;
 
         $responseHtml = '';
         foreach ($posts as $post) {
-            $responseHtml .= $theme->partial('post', ['isSubscribed' => $isSubscribed, 'post' => $post, 'timeline' => $timeline, 'next_page_url' => $posts->appends(['username' => $request->username])->nextPageUrl()]);
+            $responseHtml .= $theme->partial('post', ['isSubscribed' => $isSubscribed, 'post' => $post, 'timeline' => $timeline, 'next_page_url' => $next_page_url]);
         }
 
         return $responseHtml;
@@ -745,7 +790,6 @@ class TimelineController extends AppBaseController
     {
         $post = Post::findOrFail($request->post_id);
         $posted_user = $post->user;
-        $like_count = $post->users_liked()->count();
 
         //Like the post
         if (!$post->users_liked->contains(Auth::user()->id)) {
@@ -769,9 +813,10 @@ class TimelineController extends AppBaseController
                 Notification::create(['user_id' => $post->user->id, 'post_id' => $post->id, 'notified_by' => Auth::user()->id, 'description' => Auth::user()->name.' '.$notify_message, 'type' => $notify_type]);
             }
 
+            $like_count = $post->users_liked()->count();
             $liked_post = \Illuminate\Support\Facades\DB::table('post_likes')->where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->get();
             $liked_post_count = $liked_post != NULL ? count($liked_post) : 0;
-            return response()->json(['status' => '200', 'liked' => 'true', 'message' => $status_message, 'likecount' => $like_count, 'post_likes' => $liked_post_count]);
+            return response()->json(['status' => '200', 'liked' => 'true', 'message' => $status_message, 'likecount' => $like_count, 'post_likes' => $liked_post_count, 'user_id' => Auth::user()->id]);
         } //Unlike the post
         else {
             $post->users_liked()->detach([Auth::user()->id]);
@@ -786,9 +831,10 @@ class TimelineController extends AppBaseController
                 Notification::create(['user_id' => $post->user->id, 'post_id' => $post->id, 'notified_by' => Auth::user()->id, 'description' => Auth::user()->name.' '.$notify_message, 'type' => $notify_type]);
             }
 
+            $like_count = $post->users_liked()->count();
             $liked_post = \Illuminate\Support\Facades\DB::table('post_likes')->where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->get();
             $liked_post_count = $liked_post != NULL ? count($liked_post) : 0;
-            return response()->json(['status' => '200', 'liked' => 'false', 'message' => $status_message, 'likecount' => $like_count, 'post_likes' => $liked_post_count]);
+            return response()->json(['status' => '200', 'liked' => 'false', 'message' => $status_message, 'likecount' => $like_count, 'post_likes' => $liked_post_count, 'user_id' => Auth::user()->id]);
         }
 
         if ($post) {
@@ -1268,7 +1314,46 @@ class TimelineController extends AppBaseController
 
     public function posts($username)
     {
-        
+
+        $period = 'all';
+        $sort_by = 'latest';
+        $order_by = 'asc';
+
+        $query_period = '';
+        $query_sortby = '';
+        $query_orderby = '';
+
+        $startDate = date('y-m-d',strtotime("01-01-1970"));
+
+        if (isset($_GET['p'])) {
+
+            $period = $_GET['p'];
+
+            if ($period == '3m')
+                $startDate = date('y-m-d',strtotime(Carbon::now()->subMonth(3)));
+            else if ($period == '1m')
+                $startDate = date('y-m-d',strtotime(Carbon::now()->subMonth(1)));
+            else if ($period == '1w')
+                $startDate = date('y-m-d',strtotime(Carbon::now()->subWeek(1)));
+            else
+                $period = 'all';
+        }
+
+        if (isset($_GET['s'])) {
+            $sort_by = $_GET['s'];
+
+            if ($sort_by != 'liked')
+                $sort_by = 'latest';
+        }
+
+        if (isset($_GET['o'])) {
+            $order_by = $_GET['o'];
+
+            if ($order_by != "desc" && $order_by != "asc")
+                $order_by = "asc";
+        }
+
+
         if (!Auth::check()) {
             $admin_role_id = Role::where('name', '=', 'admin')->first();
             $timeline = Timeline::where('username', $username)->first();
@@ -1285,7 +1370,8 @@ class TimelineController extends AppBaseController
 //                        ->where('active', 1);
 //                })->orWhere('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
 //            } else {
-                $posts = Post::Where('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+                $posts = Post::Where('user_id', $id)->whereDate('created_at', '>=', $startDate)->where('active', 1)->orderBy('created_at', $order_by == 'desc' ? 'asc' : 'desc')->paginate(Setting::get('items_page'));
+
 //            }
 
 //            $user_lists = UserListType::where(['user_id' => Auth::user()->id])->with('lists')->get();
@@ -1332,8 +1418,8 @@ class TimelineController extends AppBaseController
             } else {
                 $user = User::where('id', $user->id)->first();
             }
-    
-            $next_page_url = url('ajax/get-more-posts?page=2&username='.rawurlencode($username));
+
+            $next_page_url = url('ajax/get-more-posts?page=2&username='.rawurlencode($username).'&p='.$period.'&s='.$sort_by.'&o='.$order_by);
     
             $theme = Theme::uses(Setting::get('current_theme', 'default'))->layout('public');
             $theme->setTitle(trans('common.posts').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
@@ -1341,7 +1427,10 @@ class TimelineController extends AppBaseController
             // liked_posts
             $liked_post = \Illuminate\Support\Facades\DB::table('post_likes')->where('user_id', $user->id)->get();
     
-            return $theme->scope('timeline/public-posts', compact('timeline', 'liked_post', 'user', 'posts', 'liked_pages', 'followRequests', 'joined_groups', 'own_pages', 'own_groups', 'follow_user_status', 'following_count', 'followers_count', 'follow_confirm', 'user_post', 'timeline_post', 'joined_groups_count', 'next_page_url', 'user_events', 'guest_events'))->render();
+            return $theme->scope('timeline/public-posts',
+                compact('timeline', 'liked_post', 'user', 'posts', 'liked_pages', 'followRequests', 'joined_groups',
+                    'own_pages', 'own_groups', 'follow_user_status', 'following_count', 'followers_count', 'follow_confirm', 'user_post',
+                    'timeline_post', 'joined_groups_count', 'next_page_url', 'user_events', 'guest_events', 'period', 'sort_by', 'order_by'))->render();
 
         }
         else {
@@ -1354,21 +1443,23 @@ class TimelineController extends AppBaseController
             }
 
             $user = User::where('timeline_id', $timeline['id'])->first();
-//            $posts = $timeline->posts()->where('active', 1)->orderBy('created_at', 'desc')->with('comments')->paginate(Setting::get('items_page'));
 
             $id = $user->id;
 //            $posts = $timeline->posts()->where('active', 1)->orderBy('created_at', 'desc')->with('comments')->paginate(Setting::get('items_page'));
 
             if (Auth::user()->id == $id) {
-                $posts = (Post::WhereIn('id', function ($query1) use ($id) {
+
+                $posts = (Post::WhereIn('id', function ($query1) use ($id, $startDate) {
                     $query1->select('post_id')
                         ->from('pinned_posts')
                         ->where('user_id', $id)
+                        ->whereDate('created_at', '>=', $startDate)
                         ->where('active', 1);
-                })->orWhere('user_id', $id)->where('active', 1))->paginate(Setting::get('items_page'));
+                })->orWhere('user_id', $id)->whereDate('created_at', '>=', $startDate)->where('active', 1))->orderBy('created_at', $order_by == 'desc' ? 'asc' : 'desc')->paginate(Setting::get('items_page'));
             } else {
-                $posts = Post::Where('user_id', $id)->where('active', 1)->latest()->paginate(Setting::get('items_page'));
+                $posts = Post::Where('user_id', $id)->whereDate('created_at', '>=', $startDate)->where('active', 1)->orderBy('created_at', $order_by == 'desc' ? 'asc' : 'desc')->paginate(Setting::get('items_page'));
             }
+
             $user_lists = UserListType::where(['user_id' => Auth::user()->id])->with('lists')->get();
 
             if (!empty($user_lists)) {
@@ -1414,7 +1505,7 @@ class TimelineController extends AppBaseController
                 $user = User::where('id', Auth::user()->id)->first();
             }
     
-            $next_page_url = url('ajax/get-more-posts?page=2&username='.rawurlencode($username));
+            $next_page_url = url('ajax/get-more-posts?page=2&username='.rawurlencode($username).'&p='.$period.'&s='.$sort_by.'&o='.$order_by);
     
             $theme = Theme::uses(Setting::get('current_theme', 'default'))->layout('default');
             $theme->setTitle(trans('common.posts').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
@@ -1422,7 +1513,10 @@ class TimelineController extends AppBaseController
             // liked_posts
             $liked_post = \Illuminate\Support\Facades\DB::table('post_likes')->where('user_id', \Illuminate\Support\Facades\Auth::user()->id)->get();
     
-            return $theme->scope('timeline/posts', compact('timeline', 'liked_post', 'user', 'posts', 'liked_pages', 'followRequests', 'joined_groups', 'own_pages', 'own_groups', 'follow_user_status', 'following_count', 'followers_count', 'follow_confirm', 'user_post', 'timeline_post', 'joined_groups_count', 'next_page_url', 'user_events', 'guest_events', 'user_lists'))->render();
+            return $theme->scope('timeline/posts',
+                compact('timeline', 'liked_post', 'user', 'posts', 'liked_pages', 'followRequests', 'joined_groups', 'own_pages',
+                    'own_groups', 'follow_user_status', 'following_count', 'followers_count', 'follow_confirm', 'user_post', 'timeline_post',
+                    'joined_groups_count', 'next_page_url', 'user_events', 'guest_events', 'user_lists', 'period', 'sort_by', 'order_by'))->render();
         
         }
     }
@@ -2521,6 +2615,7 @@ class TimelineController extends AppBaseController
         array_multisort($sorted_lists, $order_by == 'asc' ? SORT_ASC : SORT_DESC, $lists);
 
         return $lists;
+
     }
 
     public function addNewUserList(Request $request)
@@ -2545,63 +2640,73 @@ class TimelineController extends AppBaseController
 
     public function showMyLists()
     {
-        $user_lists = $this->getUsersListOfCurrentUser('name', 'asc');
 
-        $trending_tags = trendingTags();
-        $suggested_users = suggestedUsers();
-        $suggested_groups = suggestedGroups();
-        $suggested_pages = suggestedPages();
+        if (Auth::check()) {
+            $user_lists = $this->getUsersListOfCurrentUser('name', 'asc');
 
-        $following_count = Auth::user()->following()->where('status', '=', 'approved')->get()->count();
-        $followers_count = Auth::user()->followers()->where('status', '=', 'approved')->get()->count();
+            $trending_tags = trendingTags();
+            $suggested_users = suggestedUsers();
+            $suggested_groups = suggestedGroups();
+            $suggested_pages = suggestedPages();
 
-        $theme = Theme::uses('default')->layout('default');
-        $theme->setTitle(trans('common.lists').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
+            $following_count = Auth::user()->following()->where('status', '=', 'approved')->get()->count();
+            $followers_count = Auth::user()->followers()->where('status', '=', 'approved')->get()->count();
 
-        return $theme->scope('timeline/my-lists', compact( 'suggested_users', 'trending_tags', 'suggested_groups', 'suggested_pages', 'user_lists', 'following_count', 'followers_count'))->render();
+            $theme = Theme::uses('default')->layout('default');
+            $theme->setTitle(trans('common.lists') . ' ' . Setting::get('title_seperator') . ' ' . Setting::get('site_title') . ' ' . Setting::get('title_seperator') . ' ' . Setting::get('site_tagline'));
+
+            return $theme->scope('timeline/my-lists', compact('suggested_users', 'trending_tags', 'suggested_groups', 'suggested_pages', 'user_lists', 'following_count', 'followers_count'))->render();
+
+        } else {
+            return redirect()->action('Auth\LoginController@getLogin');
+        }
     }
 
     public function showSpecificList($list_type_id) {
 
-        $following_count = Auth::user()->following()->where('status', '=', 'approved')->get()->count();
-        $followers_count = Auth::user()->followers()->where('status', '=', 'approved')->get()->count();
-        $suggested_users = suggestedUsers();
+        if (Auth::check()) {
+            $following_count = Auth::user()->following()->where('status', '=', 'approved')->get()->count();
+            $followers_count = Auth::user()->followers()->where('status', '=', 'approved')->get()->count();
+            $suggested_users = suggestedUsers();
 
-        $saved_users = array();
+            $saved_users = array();
 
-        if ($list_type_id == 'followers') {
+            if ($list_type_id == 'followers') {
 
-            $saved_users = Auth::user()->followers()->where('status', '=', 'approved')->get();
-            $list_type_name = "Fans";
+                $saved_users = Auth::user()->followers()->where('status', '=', 'approved')->get();
+                $list_type_name = "Fans";
 
-            $theme = Theme::uses('default')->layout('default');
-            $theme->setTitle(trans('common.followers-1').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
+                $theme = Theme::uses('default')->layout('default');
+                $theme->setTitle(trans('common.followers-1').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
 
-        } else if ($list_type_id == 'following') {
+            } else if ($list_type_id == 'following') {
 
-            $saved_users = Auth::user()->following()->where('status', '=', 'approved')->get();
-            $list_type_name = "Followers";
+                $saved_users = Auth::user()->following()->where('status', '=', 'approved')->get();
+                $list_type_name = "Following";
 
-            $theme = Theme::uses('default')->layout('default');
-            $theme->setTitle(trans('common.following').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
+                $theme = Theme::uses('default')->layout('default');
+                $theme->setTitle(trans('common.following').' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
 
-        } else {
+            } else {
 
-            $saved_user_list = UserList::where(['list_type_id' => $list_type_id])->with('savedUsers')->get();
+                $saved_user_list = UserList::where(['list_type_id' => $list_type_id])->with('savedUsers')->get();
 
-            $list_type = UserListType::where(['id' => $list_type_id])->first();
-            $list_type_name = $list_type->list_type;
+                $list_type = UserListType::where(['id' => $list_type_id])->first();
+                $list_type_name = $list_type->list_type;
 
-            foreach ($saved_user_list as $key => $list) {
-                $saved_users[$key] = $list->savedUsers;
+                foreach ($saved_user_list as $key => $list) {
+                    $saved_users[$key] = $list->savedUsers;
+                }
+
+                $theme = Theme::uses('default')->layout('default');
+                $theme->setTitle($list_type_name.' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
+
             }
 
-            $theme = Theme::uses('default')->layout('default');
-            $theme->setTitle($list_type_name.' '.Setting::get('title_seperator').' '.Setting::get('site_title').' '.Setting::get('title_seperator').' '.Setting::get('site_tagline'));
-
+            return $theme->scope('timeline/my-list', compact( 'suggested_users', 'trending_tags', 'suggested_groups', 'suggested_pages', 'user_lists', 'following_count', 'followers_count', 'saved_users', 'list_type_id', 'list_type_name'))->render();
+        } else {
+            return redirect()->action('Auth\LoginController@getLogin');
         }
-
-        return $theme->scope('timeline/my-list', compact( 'suggested_users', 'trending_tags', 'suggested_groups', 'suggested_pages', 'user_lists', 'following_count', 'followers_count', 'saved_users', 'list_type_id', 'list_type_name'))->render();
     }
 
     public function sendTipPost(Request $request)

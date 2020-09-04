@@ -24,12 +24,22 @@
                         </h4>
                         
                         <?php if($suggested_user->price >= 0): ?>
-                            <div class="btn-follow">
-                                <a href="#" class="btn btn-default follow-user follow" data-price="<?php echo e($suggested_user->price); ?>" data-timeline-id="<?php echo e($suggested_user->timeline->id); ?>"> <i class="fa fa-heart"></i> <?php echo e(trans('common.follow')); ?></a>
-                            </div>
-                            <div class="btn-follow hidden">
-                                <a href="#" class="btn btn-success follow-user unfollow" data-price="<?php echo e($suggested_user->price); ?>" data-timeline-id="<?php echo e($suggested_user->timeline->id); ?>"><i class="fa fa-check"></i> <?php echo e(trans('common.following')); ?></a>
-                            </div>
+                            <?php if(!$suggested_user->followers->contains(Auth::user()->id)): ?>
+                                <div class="btn-follow">
+                                    <a href="#" class="btn btn-default follow-user follow" data-price="<?php echo e($suggested_user->price); ?>" data-timeline-id="<?php echo e($suggested_user->timeline->id); ?>"> <i class="fa fa-heart"></i> <?php echo e(trans('common.follow')); ?></a>
+                                </div>
+                                <div class="btn-follow hidden">
+                                    <a href="#" class="btn btn-success follow-user unfollow" data-price="<?php echo e($suggested_user->price); ?>" data-timeline-id="<?php echo e($suggested_user->timeline->id); ?>"><i class="fa fa-check"></i> <?php echo e(trans('common.following')); ?></a>
+                                </div>
+                            <?php else: ?>
+                                <div class="btn-follow hidden">
+                                    <a href="#" class="btn btn-default follow-user follow" data-price="<?php echo e($suggested_user->price); ?>" data-timeline-id="<?php echo e($suggested_user->timeline->id); ?>"> <i class="fa fa-heart"></i> <?php echo e(trans('common.follow')); ?></a>
+                                </div>
+                                <div class="btn-follow">
+                                    <a href="#" class="btn btn-success follow-user unfollow" data-price="<?php echo e($suggested_user->price); ?>" data-timeline-id="<?php echo e($suggested_user->timeline->id); ?>"><i class="fa fa-check"></i> <?php echo e(trans('common.following')); ?></a>
+                                </div>
+                            <?php endif; ?>
+
                         <?php endif; ?>
                     </div>
 

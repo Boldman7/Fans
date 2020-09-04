@@ -247,9 +247,9 @@ $(function () {
         });
     });
 
-    $("input[name = 'sort']").change(function() {
+    $("input[name = 'sort-lists']").change(function() {
 
-        $.post(SP_source() + 'ajax/get-lists-sort-by', {sort_by: $("input[name = 'sort']:checked").val(), order_by: $("input[name = 'order']:checked").val()}, function(data) {
+        $.post(SP_source() + 'ajax/get-lists-sort-by', {sort_by: $("input[name = 'sort-lists']:checked").val(), order_by: $("input[name = 'order-lists']:checked").val()}, function(data) {
 
             if (data.status == 200) {
 
@@ -281,9 +281,9 @@ $(function () {
     });
 
 
-    $("input[name = 'order']").change(function() {
+    $("input[name = 'order-lists']").change(function() {
 
-        $.post(SP_source() + 'ajax/get-lists-sort-by', {sort_by: $("input[name = 'sort']:checked").val(), order_by: $("input[name = 'order']:checked").val()}, function(data) {
+        $.post(SP_source() + 'ajax/get-lists-sort-by', {sort_by: $("input[name = 'sort-lists']:checked").val(), order_by: $("input[name = 'order-lists']:checked").val()}, function(data) {
 
             if (data.status == 200) {
 
@@ -312,6 +312,22 @@ $(function () {
 
             }
         });
+    });
+
+
+    $("input[name = 'period-post']").change(function() {
+
+        window.location = base_url  + current_username + '?p=' + $("input[name = 'period-post']:checked").val() + '&s=' + $("input[name = 'sort-profile-post']:checked").val() + '&o=' + $("input[name = 'order-profile-post']:checked").val();
+    });
+
+    $("input[name = 'sort-profile-post']").change(function() {
+
+        window.location = base_url  + current_username + '?p=' + $("input[name = 'period-post']:checked").val() + '&s=' + $("input[name = 'sort-profile-post']:checked").val() + '&o=' + $("input[name = 'order-profile-post']:checked").val();
+    });
+
+    $("input[name = 'order-profile-post']").change(function() {
+
+        window.location = base_url  + current_username + '?p=' + $("input[name = 'period-post']:checked").val() + '&s=' + $("input[name = 'sort-profile-post']:checked").val() + '&o=' + $("input[name = 'order-profile-post']:checked").val();
     });
 
     // Unsave a page from saved list of pages
@@ -661,17 +677,52 @@ $(function () {
            $('.like2-'+postId).empty();
            $('.footer-list').find('.like2-'+postId).removeClass('hidden').append('<a href="#" class=".show-likes">' + data.likecount + '<i class="fa fa-thumbs-up"></i></a>');
            $('.liked-post').text(data.post_likes);
+           $('.tag-like-'+postId).removeClass('hidden');
+           //$('.tag-like-'+postId).attr('data-users', postId);
+            $('.circle-like-count-'+postId).text(data.likecount);
+
+            var userIds = $('.tag-like-' + postId).attr('data-users');
+            if (userIds == '' || userIds == null)
+                $('.tag-like-' + postId).attr('data-users', data.user_id);
+            else {
+                userIds += ',' + data.user_id;
+                $('.tag-like-' + postId).attr('data-users', userIds);
+            }
 
          }else{
-           like_btn.find('.like-'+postId).parent().removeClass('hidden');
-           like_btn.find('.unlike-'+postId).parent().addClass('hidden');
-           like_btn.find('.notify').parent().removeClass('hidden');
-           like_btn.find('.unnotify').parent().addClass('hidden');
-           $('.footer-list').find('.like1-'+postId).parent().remove();
-           $('.like2-'+postId).empty();
-           $('.footer-list').find('.like2-'+postId).removeClass('hidden').append('<a href="#" class=".show-likes">' + data.likecount + '<i class="fa fa-thumbs-down"></i></a>');
-         $('.liked-post').text(data.post_likes);
-         }
+            like_btn.find('.like-'+postId).parent().removeClass('hidden');
+            like_btn.find('.unlike-'+postId).parent().addClass('hidden');
+            like_btn.find('.notify').parent().removeClass('hidden');
+            like_btn.find('.unnotify').parent().addClass('hidden');
+            $('.footer-list').find('.like1-'+postId).parent().remove();
+            $('.like2-'+postId).empty();
+            $('.footer-list').find('.like2-'+postId).removeClass('hidden').append('<a href="#" class=".show-likes">' + data.likecount + '<i class="fa fa-thumbs-down"></i></a>');
+            $('.liked-post').text(data.post_likes);
+
+            if (data.likecount <= 0) {
+                $('.tag-like-' + postId).addClass('hidden');
+                $('.tag-like-' + postId).attr('data-users', '');
+            } else {
+                $('.circle-like-count-'+postId).text(data.likecount);
+
+                var userIds = $('.tag-like-' + postId).attr('data-users');
+                if (userIds != '') {
+                    var arr = userIds.split(',');
+                    var newUserIds = '';
+                    for (var i = 0; i < arr.length; i ++) {
+
+                        if (arr[i] != postId) {
+                            newUserIds += arr[i];
+                            newUserIds += ',';
+                        }
+                    }
+
+                    newUserIds = newUserIds.substr(0, newUserIds.length);
+
+                    $('.tag-like-' + postId).attr('data-users', newUserIds);
+                }
+            }
+        }
         }
       });
     });

@@ -405,15 +405,17 @@
     @if(isset($user) == false || $user->followers->contains(Auth::user()->id) || $user->id == Auth::user()->id || $user->price == 0)
       <ul class="actions-count list-inline">
 
-        @if($post->users_liked()->count() > 0)
-        <?php
-        $liked_ids = $post->users_liked->pluck('id')->toArray();
-        $liked_names = $post->users_liked->pluck('name')->toArray();
-        ?>
         <li>
-          <a href="#" class="show-users-modal" data-html="true" data-heading="{{ trans('common.likes') }}"  data-users="{{ implode(',', $liked_ids) }}" data-original-title="{{ implode('<br />', $liked_names) }}"><span class="count-circle"><i class="fa fa-thumbs-up"></i></span> {{ $post->users_liked->count() }} {{ trans('common.likes') }}</a>
+            @if($post->users_liked()->count() > 0)
+            <?php
+                $liked_ids = $post->users_liked->pluck('id')->toArray();
+                $liked_names = $post->users_liked->pluck('name')->toArray();
+            ?>
+              <a href="#" class="show-users-modal tag-like-{{$post->id}}" data-html="true" data-heading="{{ trans('common.likes') }}"  data-users="{{ implode(',', $liked_ids) }}" data-original-title="{{ implode('<br />', $liked_names) }}"><span class="count-circle"><i class="fa fa-thumbs-up"></i></span> <span class="circle-like-count circle-like-count-{{$post->id}}">{{ $post->users_liked->count() }}</span> {{ trans('common.likes') }}</a>
+           @else
+                <a href="#" class="show-users-modal tag-like-{{$post->id}} hidden" data-html="true" data-heading="{{ trans('common.likes') }}" data-original-title=""><span class="count-circle"><i class="fa fa-thumbs-up"></i></span> <span class="circle-like-count circle-like-count-{{$post->id}}"></span> {{ trans('common.likes') }}</a>
+            @endif
         </li>
-        @endif
 
         @if($post->comments->count() > 0)
         <li>

@@ -13,7 +13,7 @@
 					</div>
 					<div class="col-md-8">
 						<div class="timeline-posts">
-							<?php if($posts->count() > 0): ?>
+							<?php if(count($posts) > 0): ?>
 								<?php $__currentLoopData = $posts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $post): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 									<?php echo Theme::partial('public-post',compact('post','timeline','next_page_url', 'user')); ?>
 

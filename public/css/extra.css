@@ -338,7 +338,7 @@
 
 .tablinks {
     display: flex;
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .lists-modal .g-icon {
@@ -374,6 +374,7 @@
     font-size: 15px;
     font-weight: bolder;
     width: 100%;
+    text-transform: unset;
     cursor: pointer;
 }
 
@@ -499,4 +500,8 @@
     margin-left: 10px;
     margin-right: 5px;
     cursor: pointer;
+}
+
+.post-dropdown-menu {
+    min-width: 220px !important;
 }

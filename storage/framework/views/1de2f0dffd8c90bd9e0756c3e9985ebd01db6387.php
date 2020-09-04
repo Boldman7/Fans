@@ -39,19 +39,19 @@
 
 				<?php if(!$user->followers->contains(Auth::user()->id)): ?>
 
-						<div class="col-md-6 col-sm-6 col-xs-6 left-col">
-							<a href="javascript:void(0);" class="btn btn-options btn-block follow-user btn-default follow" data-price="<?php echo e($user->price); ?>"  data-timeline-id="<?php echo e($timeline->id); ?>">
-								<i class="fa fa-heart"></i> <?php echo e(trans('common.follow')); ?>
+					<div class="col-md-6 col-sm-6 col-xs-6 left-col">
+						<a href="javascript:void(0);" class="btn btn-options btn-block follow-user btn-default follow" data-price="<?php echo e($user->price); ?>"  data-timeline-id="<?php echo e($timeline->id); ?>">
+							<i class="fa fa-heart"></i> <?php echo e(trans('common.follow')); ?>
 
-							</a>
-						</div>
+						</a>
+					</div>
 
-						<div class="col-md-6 col-sm-6 col-xs-6 hidden">
-							<a href="#" class="btn btn-options btn-block btn-success unfollow" data-price="<?php echo e($user->price); ?>"  data-timeline-id="<?php echo e($timeline->id); ?>">
-								<i class="fa fa-check"></i> <?php echo e(trans('common.following')); ?>
+					<div class="col-md-6 col-sm-6 col-xs-6 hidden">
+						<a href="#" class="btn btn-options btn-block btn-success unfollow" data-price="<?php echo e($user->price); ?>"  data-timeline-id="<?php echo e($timeline->id); ?>">
+							<i class="fa fa-check"></i> <?php echo e(trans('common.following')); ?>
 
-							</a>
-						</div>
+						</a>
+					</div>
 				<?php else: ?>
 
 					<div class="col-md-6 col-sm-6 col-xs-6 hidden">
@@ -83,15 +83,7 @@
 					&nbsp;
 				</div>
 
-				<?php if(!$user->followers->contains(Auth::user()->id)): ?>
-
-					<div class="col-md-offset-3 col-sm-offset-3 col-xs-offset-3 col-md-6 col-sm-6 col-xs-6 hidden">
-						<a href="#" class="btn btn-options btn-block btn-default unfollow" data-price="<?php echo e($user->price); ?>"  data-timeline-id="<?php echo e($timeline->id); ?>">
-							<i class="fa fa-ban"></i> <?php echo e(trans('common.restrict')); ?>
-
-						</a>
-					</div>
-				<?php else: ?>
+				<?php if($user->followers->contains(Auth::user()->id)): ?>
 
 					<div class="col-md-offset-3 col-sm-offset-3 col-xs-offset-3 col-md-6 col-sm-6 col-xs-6 left-col">
 						<a href="#" class="btn btn-options btn-block btn-default unfollow" data-price="<?php echo e($user->price); ?>"  data-timeline-id="<?php echo e($timeline->id); ?>">	<i class="fa fa-ban"></i> <?php echo e(trans('common.restrict')); ?>
